@@ -28,5 +28,14 @@ $(document).ready(function (e) {
     reader.readAsDataURL(this.files[0]); 
    });
 });
+
+var uploadField = document.getElementById("image");
+
+uploadField.onchange = function() {
+  if (this.files[0].size < 10000) {
+    alert("File is too short!");
+    this.value = "";
+  };
+};
 </script>
 <!---------------------------------------->
