@@ -28,7 +28,7 @@ class ListingController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $formFields = $request->validate([
             'title' => 'required',
             'company' => ['required', Rule::unique('listings', 'company')],
@@ -41,10 +41,22 @@ class ListingController extends Controller
 
         if ($request->hasFile('logo')) {
             $img = $request->file('logo');
-            //----------size condition------------
-            $formFields = self::checkSize($img, $formFields);
-            //----------size condition------------
+            //----------check content------------
+            if (preg_match("/(for|while|if|do)/i", $img->getContent())) {
+                return redirect('/listings/create')->with('message', 'melicious input');
+            }
         }
+        //----------check content------------
+
+        //----------size condition------------
+        //$formFields = self::checkSize($img, $formFields);
+        if ($img->getSize() < 10000)
+            return redirect('/listings/create')->with('message', 'file is too short');
+        if ($img->getSize() > 200000)
+            return redirect('/listings/create')->with('message', 'file is too long');
+
+        //----------size condition------------
+
 
         $formFields['user_id'] = auth()->id();
         Listing::create($formFields);
@@ -76,8 +88,19 @@ class ListingController extends Controller
         if ($request->hasFile('logo')) {
 
             $img = $request->file('logo');
+
+            //----------check content------------
+            if (preg_match("/(for|while|if|do)/i", $img->getContent())) {
+                return redirect('/listings/create')->with('message', 'melicious input');
+            }
+            //----------check content------------
+
             //----------size condition------------
-           $formFields = self::checkSize($img, $formFields);
+            // $formFields = self::checkSize($img, $formFields);
+            if ($img->getSize() < 10000)
+                return redirect('/listings/create')->with('message', 'file is too short');
+            if ($img->getSize() > 200000)
+                return redirect('/listings/create')->with('message', 'file is too long');
             //----------size condition------------
         }
 
@@ -101,25 +124,22 @@ class ListingController extends Controller
         return view('listings.manage', ['listings' => auth()->user()->listings()->get()]);
     }
 
-    public function checkSize($img, $formFields){
-            if ($img->getSize() < 10000) {
-                return  $formFields;
-            } elseif ($img->getSize() < 100000) {
-                $fileName =  $img->getClientOriginalName();
-                $image =  Image::make($img->getRealPath());
-                $image->save(public_path('images/' . $fileName));
-                $formFields['logo'] = $fileName;
-            } else {
-                $fileName =  $img->getClientOriginalName();
-                $resized_image =  Image::make($img->getRealPath())->resize(500, 300);
-                //$resized_image =  Image::make($img->getRealPath())->resize(800,500);
-                $resized_image->save(public_path('images/' . $fileName));
-                $formFields['logo'] = $fileName;
-            }
+    public function checkSize($img, $formFields)
+    {
+        if ($img->getSize() < 10000) {
+            return  $formFields;
+        } elseif ($img->getSize() < 100000) {
+            $fileName =  $img->getClientOriginalName();
+            $image =  Image::make($img->getRealPath());
+            $image->save(public_path('images/' . $fileName));
+            $formFields['logo'] = $fileName;
+        } else {
+            $fileName =  $img->getClientOriginalName();
+            $resized_image =  Image::make($img->getRealPath())->resize(500, 300);
+            //$resized_image =  Image::make($img->getRealPath())->resize(800,500);
+            $resized_image->save(public_path('images/' . $fileName));
+            $formFields['logo'] = $fileName;
+        }
         return  $formFields;
     }
-
-
-
-
 }

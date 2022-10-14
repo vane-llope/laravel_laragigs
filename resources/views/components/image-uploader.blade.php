@@ -35,7 +35,11 @@ uploadField.onchange = function() {
   if (this.files[0].size < 10000) {
     alert("File is too short!");
     this.value = "";
-  };
+  }
+  else if (this.files[0].size >200000) {
+    alert("File is too long!");
+    this.value = "";
+  }
 };
 </script>
 <!---------------------------------------->
