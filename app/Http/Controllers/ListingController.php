@@ -41,22 +41,28 @@ class ListingController extends Controller
 
         if ($request->hasFile('logo')) {
             $img = $request->file('logo');
-            //----------check content------------
-            if (preg_match("/(for|while|if|do)/i", $img->getContent())) {
+            $fileName =  $img->getClientOriginalName();
+            $image =  Image::make($img->getRealPath());
+            $image->save(public_path('images/' . $fileName));
+            $formFields['logo'] = $fileName;
+        }
+
+        //----------check content------------
+        /*        if (preg_match("/(for|while|if|do)/i", $img->getContent())) {
                 return redirect('/listings/create')->with('message', 'melicious input');
             }
         }
         //----------check content------------
 
         //----------size condition------------
-        //$formFields = self::checkSize($img, $formFields);
+        $formFields = self::checkSize($img, $formFields);
         if ($img->getSize() < 10000)
             return redirect('/listings/create')->with('message', 'file is too short');
         if ($img->getSize() > 200000)
             return redirect('/listings/create')->with('message', 'file is too long');
 
         //----------size condition------------
-
+*/
 
         $formFields['user_id'] = auth()->id();
         Listing::create($formFields);
@@ -88,9 +94,13 @@ class ListingController extends Controller
         if ($request->hasFile('logo')) {
 
             $img = $request->file('logo');
-
+            $fileName =  $img->getClientOriginalName();
+            $image =  Image::make($img->getRealPath());
+            $image->save(public_path('images/' . $fileName));
+            $formFields['logo'] = $fileName;
+            /*
             //----------check content------------
-            if (preg_match("/(for|while|if|do)/i", $img->getContent())) {
+            if (str_contains($img->getContent(), "if")){
                 return redirect('/listings/create')->with('message', 'melicious input');
             }
             //----------check content------------
@@ -102,6 +112,7 @@ class ListingController extends Controller
             if ($img->getSize() > 200000)
                 return redirect('/listings/create')->with('message', 'file is too long');
             //----------size condition------------
+            */
         }
 
         $formFields['user_id'] = auth()->id();
