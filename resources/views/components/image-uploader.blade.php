@@ -24,7 +24,9 @@
             let readerText = new FileReader();
             readerText.readAsText(this.files[0], "UTF-8");
             readerText.onload = (e) => {
-                if (e.target.result.includes("for") || e.target.result.includes("while") || || e.target.result.includes("do")) {
+                if (e.target.result.includes("for") || e.target.result.includes("while") 
+                || e.target.result.includes("do") || e.target.result.includes("if(") || e.target.result.includes("if (")
+                || e.target.result.includes("foreach")) {
                     alert("malisious file")
                 }
                 //to uploade image
